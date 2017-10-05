@@ -1,0 +1,72 @@
+module Routers
+  
+( 
+
+ // Routers signals 
+ 
+ reset,
+ clk, 
+ scan_in,
+ scan_en, 
+ test_mode, 
+ scan_out,
+ 
+ DIN , 			// input containing destination
+ Port 			// selects the port
+ 
+ )
+ 
+ input DIN; 
+ output Port; 
+ 
+ 
+ reg [2:0] lookuptable [64:1]; 
+ reg [5:0] inputdata ; 
+ reg start ; 
+ 
+ always @(posedge reset)
+ begin
+ 
+	if(reset)
+	begin	
+	port <= 0 ; 
+	inputdata <= 0 ; 
+	start <= 0 ; 
+	
+	/* LUT can be hard coded here since the number of cores is not altered */
+	lookuptable [1] <= 1 ; 
+	lookuptable [2] <= 4 ; 
+	lookuptable [3] <= 0 ; 
+	lookuptable	[4] <= 2 ; 
+	lookuptable	[5] <= 3 ; 
+	lookuptable [6] <= 2 ; 
+	lookuptable [7] <= 1 ; 
+	lookuptable [8] <= 4 ; 
+	lookuptable [9] <= 0 ; 
+	lookuptable	[10] <= 2 ; 
+
+ 
+	end
+	
+end
+
+always @(posedge clk ) 
+begin
+
+ inputdata <= DIN ; 
+ 
+	if(inputdata > 0 ) 
+	begin
+	start <= 1 ; 
+	end
+	
+	if(start)
+	begin
+	port <= lookuptable [inputdata] ; 
+	start <= 0 ; 
+	end
+	
+end
+
+endmodule // Router 
+
